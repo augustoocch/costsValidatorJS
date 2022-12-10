@@ -1,5 +1,3 @@
-
-
 const presupuesto = document.querySelector('#total');
 const rest = document.querySelector('#restante');
 const formGasto = document.querySelector('#agregar-gasto');
@@ -67,19 +65,28 @@ let arrayProductos = new Map();
 
 formGasto.addEventListener('submit', (e)=> {
     e.preventDefault();
-    arrayProductos.set(gasto.value, cant.value);
-    gastoActual = parseInt(gastoActual) + parseInt(cant.value);
-    eliminar = document.querySelectorAll('.eliminar');
-    listadoAdd(gasto.value, cant.value);
-    removeElement();
-    valores();
-    reset();
+
+    if (gasto.value == '' || isNaN(cant.value) || cant.value == '' || cant.value == 0 || gasto.value == null || cant.value == null) {
+        showMessage("Campos invalidos", "error");
+        valores();
+        reset();
+    } else {
+        arrayProductos.set(gasto.value, cant.value);
+        gastoActual = parseInt(gastoActual) + parseInt(cant.value);
+        eliminar = document.querySelectorAll('.eliminar');
+        showMessage("Gasto agregado correctamente", "exito");
+        listadoAdd(gasto.value, cant.value);
+        removeElement();
+        valores();
+        reset();
+    }
 })
 
 // INSERT INTO DOM ------------------------------------------------------------------------------------------//
 
 function listadoAdd(gasto, cant) {
     const li = document.createElement('li');
+    li.className = 'list-group-item d-flex justify-content-between align-items-center';
     let listadoUl= document.querySelector('.list-group');
     const span1 = document.createElement('p');
     const span2 = document.createElement('p');
@@ -118,6 +125,29 @@ function mapaNuevo() {
     valores();
 }
 
+//  MESSAGE IN SCREEN ------------------------------------------------------------------------------------------//
+
+function showMessage(mensaje, tipo) {
+    if(document.querySelector('.mensajeMostrar')){
+        exit();
+    } else {
+        const head = document.querySelector('.primario');
+        const div = document.createElement('div');
+        div.className = ('text-center', 'alert', 'mensajeMostrar');
+
+        if(tipo === 'error') {
+            div.classList.add('alert-danger');
+        } else {
+            div.classList.add('alert-success');
+        }
+        div.textContent = mensaje;
+        head.insertBefore(div, formGasto);
+
+        setTimeout( ()=> {
+            document.querySelector('.mensajeMostrar').remove();
+        },3000);
+    }
+}
 
 //  RESET  FORM------------------------------------------------------------------------------------------//
 
@@ -145,30 +175,20 @@ function changeColor() {
     const selectorRest = document.querySelector('.restante');
         if(resto < (total*0.5) && resto >= (total*0.25)) {
             selectorRest.classList.add("alert-warning");
-            
-            if(selectorRest.classList.contains('alert-success') ) {
-                selectorRest.classList.remove('alert-success');
-            }
-            if(selectorRest.classList.contains('alert-danger')) {
-                selectorRest.classList.remove('alert-danger');
+            if(selectorRest.classList.contains('alert-success') || selectorRest.classList.contains('alert-danger')) {
+                selectorRest.classList.remove('alert-success', 'alert-danger');
             }
         }
         if(resto < (total*0.25)) {
             selectorRest.classList.add("alert-danger");
-            if(selectorRest.classList.contains('alert-success') ) {
-                selectorRest.classList.remove('alert-success');
-            }
-            if(selectorRest.classList.contains('alert-warning')) {
-                selectorRest.classList.remove('alert-warning');
+            if(selectorRest.classList.contains('alert-success') || selectorRest.classList.contains('alert-warning')) {
+                selectorRest.classList.remove('alert-success', 'alert-warning');
             }
         }
         if(resto >= (total*0.5)) {
-            selectorRest.classList.add("alert-success");
-            if(selectorRest.classList.contains('alert-warning') ) {
-                selectorRest.classList.remove('alert-warning');
-            }
-            if(selectorRest.classList.contains('alert-danger')) {
-                selectorRest.classList.remove('alert-danger');
+            selectorRest.classList.add('alert-success');
+            if(selectorRest.classList.contains('alert-danger') || selectorRest.classList.contains('alert-warning')) {
+                selectorRest.classList.remove('alert-danger', 'alert-warning');
             }
         }
 
